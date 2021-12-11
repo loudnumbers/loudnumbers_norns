@@ -14,7 +14,7 @@
 -- datasets up to 512 values
 -- 
 -- TODO
--- - Figure out why particularly large numbers (>1000) don't work
+-- - Preserve ordering of columns
 -- - Crow support
 -- - Grid support
 -- - Sonify to things that aren't 
@@ -42,7 +42,7 @@ function init()
     columns = {}
 
     -- Visual variables
-    spacing = 2 -- spacing between bars
+    spacing = 0 -- spacing between bars
 
     -- Sound variables
     sync = 1 / 2
