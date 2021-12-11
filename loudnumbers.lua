@@ -154,7 +154,7 @@ function redraw()
     for i = 1, #data do
 
         -- calculate height and xy positions
-        h = map(data[i], 0, math.max(table.unpack(data)), 0, 44, true)
+        h = map(data[i], dMin, dMax, 0, 44)
         x = 1 + spacing + ((i - 1) * (rectWidth + spacing))
         y = 64 - 10 - h
 
@@ -307,7 +307,7 @@ function scale_data()
     for i = 1, #data do
         table.insert(scaled_data, math.floor(
                          map(data[i], dMin, dMax, 1,
-                             params:get("note_pool_size"), true)))
+                             params:get("note_pool_size"))))
     end
 end
 
