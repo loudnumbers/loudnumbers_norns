@@ -21,6 +21,10 @@
 --
 musicutil = require("musicutil")
 -- Import musicutil library: https://monome.org/docs/norns/reference/lib/musicutil
+
+local p_option = require "core/params/option"
+-- Import library to update parameters (Thanks Eigen!)
+
 csv = require(_path.code .. "loudnumbers/lib/csv")
 -- Import csv library: https://github.com/geoffleyland/lua-csv
 
@@ -151,7 +155,7 @@ function redraw()
     for i = 1, #data do
 
         -- calculate height and xy positions
-        h = map(data[i], 0, math.max(table.unpack(data)), 0, 44)
+        h = map(data[i], 0, math.max(table.unpack(data)), 0, 44, true)
         x = 1 + spacing + ((i - 1) * (rectWidth + spacing))
         y = 64 - 10 - h
 
@@ -304,7 +308,7 @@ function scale_data()
     for i = 1, #data do
         table.insert(scaled_data, math.floor(
                          map(data[i], dMin, dMax, 1,
-                             params:get("note_pool_size"))))
+                             params:get("note_pool_size"), true)))
     end
 end
 
@@ -342,7 +346,10 @@ function list_file_names(callback)
             name = "data filename",
             options = file_names,
             default = 1,
-            action = function() reload_data() end
+            action = function()
+                reload_data()
+                change_column()
+            end
         }
 
         reload_data() -- get the data
@@ -379,13 +386,24 @@ function reload_data()
 
     print("column headers found:")
     tab.print(headers)
-
-    _menu.rebuild_params()
-
 end
 
+-- Runs when a new column is selected
 function change_column()
     data = columns[headers[params:get("column")]]
+    position = 1
     scale_data()
     redraw()
+end
+
+local function update_param_options(id, options, default)
+    for p_id, p_i_id in pairs(params.lookup) do
+        -- print(p_id) -- for debugging
+        if p_id == "compressor" then
+            local p = params.params[p_i_id]
+            -- tab.print(p) -- for debugging
+            local new_p = p_option.new(p_id, p.name, options, default)
+            params.params[p_i_id] = new_p
+        end
+    end
 end
