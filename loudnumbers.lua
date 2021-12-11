@@ -14,6 +14,7 @@
 -- datasets up to 512 values
 -- 
 -- TODO
+-- - Figure out why particularly large numbers (>1000) don't work
 -- - Crow support
 -- - Grid support
 -- - Sonify to things that aren't 
@@ -45,9 +46,6 @@ function init()
 
     -- Sound variables
     sync = 1 / 2
-
-    -- Set that key1_down starts as false
-    key1_down = false
 
     -- SETTING UP
     -- Get list of file names in folder
@@ -121,7 +119,7 @@ function init()
         end
     }
 
-    -- setting the loop status
+    -- setting the whether it loops or not
     params:add{
         type = "binary",
         id = "looping",
@@ -135,6 +133,7 @@ function init()
 
     position = 1 -- Set initial position at start of data
     playing = false -- whether notes are playing
+    key1_down = false -- whether key1 is depressed
 
 end
 
