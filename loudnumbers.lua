@@ -215,9 +215,9 @@ end
 
 -- stops the coroutine playing the notes
 function stop_play()
-    redraw()
     clock.cancel(play)
     playing = false
+    redraw()
 end
 
 -- when a key is depressed
