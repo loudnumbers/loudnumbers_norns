@@ -380,7 +380,7 @@ function reload_data()
             end
 
             -- otherwise add the data
-            table.insert(columns[i], v)
+            table.insert(columns[i], tonumber(v))
         end
     end
 
@@ -391,6 +391,8 @@ end
 -- Runs when a new column is selected
 function update_data()
     data = columns[headers[params:get("column")]]
+    dMin = math.min(table.unpack(data)) -- min of the table
+    dMax = math.max(table.unpack(data)) -- max of the table
     position = 1
     scale_data()
     redraw()
