@@ -348,8 +348,7 @@ function list_file_names(callback)
             default = 1,
             action = function()
                 reload_data()
-                update_param_options("column", headers,
-                                     function() update_data() end, 1)
+                update_param_options("column", headers)
                 update_data()
             end
         }
@@ -398,16 +397,14 @@ function update_data()
     redraw()
 end
 
-function update_param_options(id, options, action, default)
-    for p_id, p_i_id in pairs(params.lookup) do
-        -- print(p_id) -- for debugging
-        if p_id == id then
-            local p = params.params[p_i_id]
-            -- tab.print(p) -- for debugging
-            local new_p = p_option.new(p_id, id, options, default)
-            params.params[p_i_id] = new_p
-            params:set_action(id, action)
-        end
+-- Updates the options of a parameter dynamically (Thanks Eigen!)
+function update_param_options(id, options, default)
+    local p_i_id = params.lookup[id]
+    if p_i_id ~= nil then
+        local p = params.params[p_i_id]
+        -- tab.print(p) -- for debugging
+        local new_p = p_option.new(p_id, id, options, default)
+        params.params[p_i_id] = new_p
+        params:set_action(id, p.action)
     end
 end
--- UPDATE TO INCLUDE ACTIONS WHEN PARAM IS COPIED
