@@ -64,11 +64,11 @@ function init()
                 name = "data column",
                 options = headers,
                 default = 1,
-                action = function() change_column() end
+                action = function() update_data() end
             }
 
             -- Load the data column
-            change_column()
+            update_data()
 
             loaded = true -- track whether data is loaded yet for UI purposes
             redraw()
@@ -348,7 +348,8 @@ function list_file_names(callback)
             default = 1,
             action = function()
                 reload_data()
-                change_column()
+                update_param_options("column", headers)
+                update_data()
             end
         }
 
@@ -389,20 +390,20 @@ function reload_data()
 end
 
 -- Runs when a new column is selected
-function change_column()
+function update_data()
     data = columns[headers[params:get("column")]]
     position = 1
     scale_data()
     redraw()
 end
 
-local function update_param_options(id, options, default)
+function update_param_options(id, options, default)
     for p_id, p_i_id in pairs(params.lookup) do
         -- print(p_id) -- for debugging
-        if p_id == "compressor" then
+        if p_id == id then
             local p = params.params[p_i_id]
             -- tab.print(p) -- for debugging
-            local new_p = p_option.new(p_id, p.name, options, default)
+            local new_p = p_option.new(p_id, id, options, default)
             params.params[p_i_id] = new_p
         end
     end
