@@ -9,9 +9,6 @@
 -- ENC 1 select bpm
 -- ENC 2 select root note
 -- ENC 3 select scale
---
--- Currently only supports 
--- datasets up to 512 values
 -- 
 -- TODO
 -- - Preserve ordering of columns
