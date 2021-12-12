@@ -4,7 +4,7 @@ Loud Numbers is a [data sonification](https://en.wikipedia.org/wiki/Sonification
 
 You can select the root note and scale with encoders 2 and 3. Encoder 1 selects the bpm. Key 2 toggles play/pause, and key 3 toggles whether the melody should loop when you reach the end of the dataset or not.
 
-The script comes with a default set of data - temperatures.csv, which contains global temperature anomalies since 1950 for the globe, tropics, and northern and southern hemispheres. Swap between data columns by turning encoder 1 while holding down key 1. Selecting a new data column will reset the sequence.
+The script comes with a default set of data - temperature.csv, which contains global temperature anomalies since 1950 for the globe, tropics, and northern and southern hemispheres, via [Our World in Data](https://ourworldindata.org/grapher/temperature-anomaly?time=1950..2019&country=~Global). Swap between data columns by turning encoder 1 while holding down key 1. Selecting a new data column will reset the sequence.
 
 ## Requirements
 
