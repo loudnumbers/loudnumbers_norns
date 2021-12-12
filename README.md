@@ -14,12 +14,12 @@ Monome Norns or Norns Shield
 
 Place data files in the data/loudnumbers folder - the same folder as temperatures.csv. Once you've loaded your file, restart the script and select it through the parameters menu.
 
-- KEY 2 toggle play/pause
-- KEY 3 toggle loop
-- KEY 1 + ENC 1 select data column
-- ENC 1 select bpm
-- ENC 2 select root note
-- ENC 3 select scale
+- KEY 2: toggle play/pause
+- KEY 3: toggle loop
+- KEY 1 + ENC 1: select data column
+- ENC 1: select bpm
+- ENC 2: select root note
+- ENC 3: select scale
 
 ## Tips
 
