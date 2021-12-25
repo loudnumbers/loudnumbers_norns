@@ -209,10 +209,18 @@ function play_notes()
         clock.sync(sync)
         redraw()
         note = scaled_data[position]
+        volts = map(note, 1, params:get("note_pool_size"), 0, 10, true)
+        -- Play note from Norns
         engine.hz(notes_freq[note])
-        crow.output[1].volts = (notes_nums[note] - 48) / 12
-        crow.output[2].volts = 5
-        crow.output[2].volts = 0
+        -- Trigger
+        crow.output[1].volts = 5
+        crow.output[1].volts = 0
+        -- Output v/oct
+        crow.output[2].volts = (notes_nums[note] - 48) / 12
+        -- Output voltage
+        crow.output[3].volts = volts
+        crow.output[4].volts = volts
+
         increment_position()
     end
 end
@@ -394,6 +402,7 @@ end
 
 -- Runs when a new column is selected
 function update_data()
+    print("Loading column " .. headers[params:get("column")])
     data = columns[headers[params:get("column")]]
     dMin = math.min(table.unpack(data)) -- min of the table
     dMax = math.max(table.unpack(data)) -- max of the table

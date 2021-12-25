@@ -23,8 +23,10 @@ Place data files in the data/loudnumbers folder - the same folder as temperature
 
 ## Crow support
 
-- OUT1 = note (1V/oct)
-- OUT2 = trigger
+- OUT1 = trigger 
+- OUT2 = note (1V/oct)
+- OUT3 = data value scaled from 0V to 10V
+- OUT4 = data value scaled from 0V to 10V
 
 I want to build this out a bit more in due course, but this works for now.
 
