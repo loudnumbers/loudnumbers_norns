@@ -9,10 +9,13 @@
 -- ENC 1 select bpm
 -- ENC 2 select root note
 -- ENC 3 select scale
+--
+-- Crow support
+-- OUT1 = note (1V/oct)
+-- OUT2 = trigger
 -- 
 -- TODO
 -- - Preserve ordering of columns
--- - Crow support
 -- - Grid support
 -- - Sonify to things that aren't 
 -- pitch - amp, cutoff, FX, more
@@ -205,7 +208,11 @@ function play_notes()
     while true do
         clock.sync(sync)
         redraw()
-        engine.hz(notes_freq[scaled_data[position]])
+        note = scaled_data[position]
+        engine.hz(notes_freq[note])
+        crow.output[1].volts = (notes_nums[note] - 24) / 12
+        crow.output[2].volts = 5
+        crow.output[2].volts = 0
         increment_position()
     end
 end
