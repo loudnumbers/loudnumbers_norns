@@ -21,6 +21,13 @@ Place data files in the data/loudnumbers folder - the same folder as temperature
 - ENC 2: select root note
 - ENC 3: select scale
 
+## Crow support
+
+- OUT1 = note (1V/oct)
+- OUT2 = trigger
+
+I want to build this out a bit more in due course, but this works for now.
+
 ## Tips
 
 - The script assumes that your .csv file has headers. If it doesn't, it'll read the first row of data as headers.
@@ -29,6 +36,10 @@ Place data files in the data/loudnumbers folder - the same folder as temperature
 - Looking for some data to sonify? [Step this way](https://docs.google.com/spreadsheets/d/1wZhPLMCHKJvwOkP4juclhjFgqIY8fQFMemwKL2c64vk/edit#gid=0).
 
 ## Changelog
+
+### v0.11
+
+- Added basic crow support
 
 ### v0.1
 
