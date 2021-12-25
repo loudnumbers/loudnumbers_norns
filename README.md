@@ -25,8 +25,8 @@ Place data files in the data/loudnumbers folder - the same folder as temperature
 
 - OUT1 = trigger 
 - OUT2 = note (1V/oct)
-- OUT3 = data value scaled from 0V to 10V
-- OUT4 = data value scaled from 0V to 10V
+- OUT3 = data value scaled to 0V-10V
+- OUT4 = data value scaled to 0V-10V
 
 I want to build this out a bit more in due course, but this works for now.
 
