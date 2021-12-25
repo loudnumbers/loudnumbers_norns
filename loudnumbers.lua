@@ -210,7 +210,7 @@ function play_notes()
         redraw()
         note = scaled_data[position]
         engine.hz(notes_freq[note])
-        crow.output[1].volts = (notes_nums[note] - 24) / 12
+        crow.output[1].volts = (notes_nums[note] - 48) / 12
         crow.output[2].volts = 5
         crow.output[2].volts = 0
         increment_position()
