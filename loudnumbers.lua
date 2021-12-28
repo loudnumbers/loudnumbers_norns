@@ -1,10 +1,10 @@
--- loud numbers
+-- loudnumbers_norns
 -- v0.11 @duncangeere
 -- https://llllllll.co/t/51353
 --
--- data sonification with Norns and Crow
+-- data sonification with Norns
 --
--- KEY 1 + ENC 1 select data column 
+-- K1 + E1 select data column
 -- KEY 2 toggle play/pause
 -- KEY 3 toggle loop
 -- ENC 1 select bpm
@@ -27,7 +27,7 @@ musicutil = require("musicutil")
 local p_option = require "core/params/option"
 -- Import library to update parameters (Thanks Eigen!)
 
-csv = require(_path.code .. "loudnumbers/lib/csv")
+csv = require(_path.code .. "loudnumbers_norns/lib/csv")
 -- Import csv library: https://github.com/geoffleyland/lua-csv
 
 engine.name = "PolyPerc"
@@ -368,7 +368,8 @@ function list_file_names(callback)
         reload_data() -- get the data
         callback()
     end
-    norns.system_cmd('find ' .. _path.data .. 'loudnumbers -name *.csv', cb)
+    norns.system_cmd('find ' .. _path.code ..
+                         'loudnumbers_norns/data -name *.csv', cb)
 end
 
 -- Reloads the data once selected
@@ -378,7 +379,7 @@ function reload_data()
     columns = {}
 
     -- open the file
-    f = csv.open(_path.data .. "loudnumbers/" ..
+    f = csv.open(_path.code .. "loudnumbers_norns/data/" ..
                      file_names[params:get("filename")] .. ".csv",
                  {separator = ",", header = true})
 
