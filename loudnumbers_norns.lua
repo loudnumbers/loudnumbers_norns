@@ -120,6 +120,16 @@ function init()
         end
     }
 
+    -- Setting length of gates sent by crow
+    params:add{
+        type = "number",
+        id = "crow_gate",
+        name = "crow gate length",
+        min = 0.01,
+        max = 0.50,
+        default = 0.01
+    }
+
     -- setting the whether it loops or not
     params:add{
         type = "binary",
@@ -214,8 +224,7 @@ function play_notes()
         -- Play note from Norns
         engine.hz(notes_freq[note])
         -- Trigger
-        crow.output[1].volts = 5
-        crow.output[1].volts = 0
+        crow "output[1](pulse(0.05))"
         -- Output v/oct
         crow.output[2].volts = (notes_nums[note] - 48) / 12
         -- Output voltage
