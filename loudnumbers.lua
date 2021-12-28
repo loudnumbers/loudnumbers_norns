@@ -1,7 +1,8 @@
 -- loud numbers
--- data sonification with norns
--- @duncangeere
--- v0.1
+-- v0.11 @duncangeere
+-- https://llllllll.co/t/51353
+--
+-- data sonification with Norns and Crow
 --
 -- KEY 1 + ENC 1 select data column 
 -- KEY 2 toggle play/pause
