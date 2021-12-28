@@ -12,7 +12,7 @@ Monome Norns or Norns Shield
 
 ## Instructions
 
-Place data files in the data/loudnumbers folder - the same folder as temperatures.csv. Once you've loaded your file, restart the script and select it through the parameters menu.
+Place data files in the /data folder - the same folder as temperatures.csv. Once you've loaded your file, restart the script and select it through the parameters menu.
 
 - KEY 2: toggle play/pause
 - KEY 3: toggle loop
@@ -48,5 +48,5 @@ I want to build this out a bit more in due course, but this works for now.
 - Initial release
 
 ## Loud Numbers?
-It's the name of my [data sonification podcast](https://www.loudnumbers.net/). Worth a listen if you want to see what's possible with sonification.
 
+It's the name of my [data sonification podcast](https://www.loudnumbers.net/). Worth a listen if you want to see what's possible with sonification.
