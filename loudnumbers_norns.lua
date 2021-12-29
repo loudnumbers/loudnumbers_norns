@@ -403,7 +403,7 @@ function reload_data()
             end
 
             -- otherwise add the data
-            table.insert(columns[i], tonumber(v))
+            table.insert(columns[i], tonumber(v) ~= nil and tonumber(v) or 0)
         end
     end
 
