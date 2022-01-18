@@ -43,7 +43,8 @@ function init()
     columns = {}
 
     -- Visual variables
-    spacing = 0 -- spacing between bars
+    spacing = 2 -- spacing between bars
+    rectWidth = ((127 - spacing) / 16) - spacing
 
     -- Sound variables
     sync = 1 / 2
@@ -52,6 +53,7 @@ function init()
     -- Get list of file names in folder
     file_names = {}
     headers = {}
+    drawn = {}
     loaded = false
 
     list_file_names(
@@ -79,10 +81,6 @@ function init()
                 end
             end)
         end)
-
-    -- Create table of highlights
-    highlight = {}
-    for i = 1, #data do table.insert(highlight, 0) end
 
     -- setting root note using params
     params:add{
@@ -160,34 +158,26 @@ function redraw()
     -- clear the screen
     screen.clear()
 
-    -- update the highlight table
-    highlight = {}
-    for i = 1, #data do table.insert(highlight, 0) end
-    highlight[position] = 1
-
-    -- calculate width of bars
-    rectWidth = ((127 - spacing) / #data) - spacing
-
     -- loop over the data and draw the bars
-    for i = 1, #data do
+    for i = 1, #drawn do
 
         -- calculate height and xy positions
-        h = map(data[i], dMin, dMax, 0, 44)
+        h = map(drawn[i], dMin, dMax, 0, 44)
         x = 1 + spacing + ((i - 1) * (rectWidth + spacing))
         y = 64 - 10 - h
 
         -- highlight the active datapoint
-        if (highlight[i] == 1) then
+        if (i == 1) then
             screen.level(15)
         else
             screen.level(4)
         end
 
-        -- draw the rectangle
-        screen.rect(x, y, rectWidth, h)
+        -- draw the rectangle (making height 1 if it's 0)
+        screen.rect(x, y, rectWidth, h > 0 and h or 1)
 
         -- fill the active datapoint
-        if (highlight[i] == 1) then
+        if (i == 1) then
             screen.fill()
         else
             screen.stroke()
@@ -224,12 +214,15 @@ end
 -- start playing the notes
 function play_notes()
     while true do
+        -- Sync to the clock
         clock.sync(sync)
+
+        -- Get the note
         note = scaled_data[position]
         volts = map(note, 1, params:get("note_pool_size"), 0, 10, true)
         -- Play note from Norns
         engine.hz(notes_freq[note])
-        -- Trigger
+        -- Send trigger to Crow
         crow "output[1](pulse(0.05))"
         -- Output v/oct
         crow.output[2].volts = (notes_nums[note] - 48) / 12
@@ -329,10 +322,10 @@ function scale_data()
                          map(data[i], dMin, dMax, 1,
                              params:get("note_pool_size"))))
     end
+    drawn = {table.unpack(data, 1, 16)}
 end
 
 -- Adds 1 to the position and resets if it gets to the end of the data
--- Then updates the highlight table
 function increment_position()
     if ((position == #data) and params:get("looping") == 1) then
         position = 1
@@ -342,6 +335,7 @@ function increment_position()
     else
         position = position + 1
     end
+    drawn = {table.unpack(data, position, position + 15)}
 end
 
 -- Lists out available CSV files then reloads the data
