@@ -156,8 +156,6 @@ end
 
 function redraw()
 
-    clock.sync(sync)
-
     -- clear the screen
     screen.clear()
 
