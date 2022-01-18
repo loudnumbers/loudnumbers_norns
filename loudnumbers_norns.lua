@@ -70,7 +70,14 @@ function init()
             update_data()
 
             loaded = true -- track whether data is loaded yet for UI purposes
-            redraw()
+
+            -- Start a clock to redraw the screen 10 times a second
+            clock.run(function()
+                while true do
+                    clock.sleep(1 / 10)
+                    redraw()
+                end
+            end)
         end)
 
     -- Create table of highlights
@@ -218,7 +225,6 @@ end
 function play_notes()
     while true do
         clock.sync(sync)
-        redraw()
         note = scaled_data[position]
         volts = map(note, 1, params:get("note_pool_size"), 0, 10, true)
         -- Play note from Norns
@@ -239,7 +245,6 @@ end
 function stop_play()
     clock.cancel(play)
     playing = false
-    redraw()
 end
 
 -- when a key is depressed
@@ -267,7 +272,6 @@ function key(n, z)
             params:set("looping", 0)
         end
     end
-    redraw()
 end
 
 -- when an encoder is twiddled
@@ -275,25 +279,19 @@ function enc(n, d)
     -- ENC 1 select bpm when key1 is not down
     if (n == 1) and (key1_down == false) then
         params:set("clock_tempo", params:get("clock_tempo") + d)
-        redraw()
     end
 
     -- ENC 1 select column when key1 is down
     if (n == 1) and (key1_down == true) then
         params:set("column", util.clamp(params:get("column") + d, 1, #headers))
-        redraw()
     end
 
     -- ENC 2 select root note
-    if n == 2 then
-        params:set("root_note", params:get("root_note") + d)
-        redraw()
-    end
+    if n == 2 then params:set("root_note", params:get("root_note") + d) end
 
     -- ENC 3 select scale
     if n == 3 then
         params:set("scale", util.clamp(params:get("scale") + d, 1, #scale_names))
-        redraw()
     end
 end
 
@@ -419,7 +417,6 @@ function update_data()
     dMax = math.max(table.unpack(data)) -- max of the table
     position = 1
     scale_data()
-    redraw()
 end
 
 -- Updates the options of a parameter dynamically (Thanks Eigen!)
