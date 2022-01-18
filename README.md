@@ -33,8 +33,7 @@ I want to build this out a bit more in due course, but this works for now.
 ## Tips
 
 - The script assumes that your .csv file has headers. If it doesn't, it'll read the first row of data as headers.
-- Short datasets work better than long datasets right now, due to the number of bars that can fit on the screen. The temperature dataset is about 70 lines long - I wouldn't go much longer than that. It'll work, but won't look so great.
-- The script is pretty fragile right now. Don't feed it .csv files that have text columns, or anything else weird. If it breaks, please let me know (attach the CSV you're using) and I'll try to figure out why.
+- The script is a little fragile at the moment. Don't feed it anything too weird. If it breaks, please let me know (attach the CSV you're using) and I'll try to figure out why.
 - Looking for some data to sonify? [Step this way](https://docs.google.com/spreadsheets/d/1wZhPLMCHKJvwOkP4juclhjFgqIY8fQFMemwKL2c64vk/edit#gid=0).
 
 ## Changelog
