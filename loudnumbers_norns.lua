@@ -1,5 +1,5 @@
 -- loudnumbers_norns
--- v0.11 @duncangeere
+-- v0.12 @duncangeere
 -- https://llllllll.co/t/51353
 --
 -- data sonification with Norns
@@ -154,6 +154,8 @@ function init()
 end
 
 function redraw()
+
+    clock.sync(sync)
 
     -- clear the screen
     screen.clear()
