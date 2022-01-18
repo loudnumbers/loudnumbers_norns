@@ -12,14 +12,15 @@
 -- ENC 3 select scale
 --
 -- Crow support
--- OUT1 = note (1V/oct)
--- OUT2 = trigger
+-- OUT1 = trigger
+-- OUT2 = note (1V/oct)
+-- OUT3 = control voltage
+-- OUT4 = control voltage
 -- 
 -- TODO
 -- - Preserve ordering of columns
 -- - Grid support
--- - Sonify to things that aren't 
--- pitch - amp, cutoff, FX, more
+-- - Increment the note when Crow receives a trigger
 --
 musicutil = require("musicutil")
 -- Import musicutil library: https://monome.org/docs/norns/reference/lib/musicutil
