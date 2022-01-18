@@ -39,6 +39,11 @@ I want to build this out a bit more in due course, but this works for now.
 
 ## Changelog
 
+### v0.12
+
+- The screen now shows just 16 bars at a time, with the leftmost bar being the one that's being played. This solves the problem of displaying too many bars on the screen, and also paves the way for adding visualization on Grid.
+- The screen redraw function is now detached from the main clock. It runs at a constant 10fps. This helps with some display timing issues that were annoying me and simplifies the code a little.
+
 ### v0.11
 
 - Added basic crow support
