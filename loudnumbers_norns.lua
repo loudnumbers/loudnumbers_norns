@@ -208,7 +208,7 @@ function redraw()
     screen.move(spacing + 1, 62)
     screen.text(clock_playing and "||" or "▶")
 
-    screen.move(8, 62)
+    screen.move(10, 62)
     screen.text((params:get("looping") == 1) and "&" or "")
 
     screen.move(128 - 6 - screen.text_extents(scale_names[params:get("scale")]),
