@@ -51,6 +51,7 @@ When looping is turned off (KEY3), Crow trigger support will automatically deact
 - When looping is turned off (KEY3), Crow trigger support will automatically deactivate when you reach the end of your dataset and you'll need to turn it on again.
 - Bar rendering has been tweaked slightly to improve display of small values.
 - The screen now only redraws when something has changed.
+- Crow OUT3 now scales from -5V to 5V, rather than 0V to 10V. OUT4 still scales from 0V to 10V.
 
 ### v0.12
 
