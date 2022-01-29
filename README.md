@@ -16,16 +16,18 @@ Place data files in the /data folder - the same folder as temperatures.csv. Once
 
 - KEY 2: toggle play/pause
 - KEY 3: toggle loop
-- KEY 1 + ENC 1: select data column
 - ENC 1: select bpm
 - ENC 2: select root note
 - ENC 3: select scale
+
+- KEY 1 + ENC 1: select data column
+- KEY 1 + KEY 2: listen for triggers in Crow's IN2 port
 
 ## Crow support
 
 - OUT1 = trigger
 - OUT2 = note (1V/oct)
-- OUT3 = data value scaled to 0V-10V
+- OUT3 = data value scaled to -5V-5V
 - OUT4 = data value scaled to 0V-10V
 
 I want to build this out a bit more in due course, but this works for now.

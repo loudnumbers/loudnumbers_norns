@@ -238,7 +238,7 @@ function play_note()
     -- Output v/oct
     crow.output[2].volts = (notes_nums[note] - 48) / 12
     -- Output voltage
-    crow.output[3].volts = volts
+    crow.output[3].volts = -5 + volts
     crow.output[4].volts = volts
 end
 
