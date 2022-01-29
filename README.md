@@ -46,8 +46,9 @@ When looping is turned off (KEY3), Crow trigger support will automatically deact
 
 ### v0.13
 
-- Loud Numbers now supports TOTAL RHYTHMIC FREEDOM, accepting triggers receieved in Crow's IN2 port.
-- TOTAL RHYTHMIC FREEDOM must be toggled on in the parameters menu or by holding KEY1 and pressing KEY2.
+- Loud Numbers now accepts triggers receieved in Crow's IN2 port to advance notes.
+- Crow input monitoring must be toggled on in the parameters menu or by holding KEY1 and pressing KEY2.
+- When looping is turned off (KEY3), Crow trigger support will automatically deactivate when you reach the end of your dataset and you'll need to turn it on again.
 - Bar rendering has been tweaked slightly to improve display of small values.
 - The screen now only redraws when something has changed.
 
