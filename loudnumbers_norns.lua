@@ -57,6 +57,28 @@ function init()
     drawn = {}
     loaded = false
 
+    -- Set up Crow to accept pulses
+    -- setting whether crow accepts pulses or not
+    params:add{
+        type = "binary",
+        id = "crowpulses",
+        name = "accept crow pulses",
+        behavior = "toggle",
+        default = 0
+    }
+
+    -- Report when turned on and off
+    params:set_action("crowpulses", function()
+        if params:get("crowpulses") == 1 then
+            print("Listening for triggers on crow IN2...")
+        elseif params:get("crowpulses") == 0 then
+            print("No longer listening for triggers on crow IN2.")
+        end
+    end)
+
+    crow.input[2].change = crow_pulse
+    crow.input[2].mode("change", 2.0, 0.25, "rising")
+
     list_file_names(
         function() -- this runs slowly, so we need a callback for what happens next
 
@@ -73,14 +95,6 @@ function init()
             update_data()
 
             loaded = true -- track whether data is loaded yet for UI purposes
-
-            -- Start a clock to redraw the screen 10 times a second
-            clock.run(function()
-                while true do
-                    clock.sleep(1 / 10)
-                    redraw()
-                end
-            end)
         end)
 
     -- setting root note using params
@@ -149,13 +163,16 @@ function init()
     scale_data() -- scales the data to the notes
 
     position = 1 -- Set initial position at start of data
-    playing = false -- whether notes are playing
+    clock_playing = false -- whether notes are playing
     key1_down = false -- whether key1 is depressed
+    screen_dirty = true -- track whether screen needs redrawing
+
+    -- Start a clock to refresh the screen
+    redraw_clock_id = clock.run(redraw_clock)
 
 end
 
 function redraw()
-
     -- clear the screen
     screen.clear()
 
@@ -164,15 +181,12 @@ function redraw()
 
         -- calculate height and xy positions
         h = map(drawn[i], dMin, dMax, 0, 44)
+        h = h < 1 and 1 or h -- round up for sub-pixel values
         x = 1 + spacing + ((i - 1) * (rectWidth + spacing))
         y = 64 - 10 - h
 
         -- highlight the active datapoint
-        if (i == 1) then
-            screen.level(15)
-        else
-            screen.level(4)
-        end
+        screen.level(i == 1 and 15 or 4)
 
         -- draw the rectangle (making height 1 if it's 0)
         screen.rect(x, y, rectWidth, h > 0 and h or 1)
@@ -183,7 +197,6 @@ function redraw()
         else
             screen.stroke()
         end
-
     end
 
     -- Text bits
@@ -193,9 +206,9 @@ function redraw()
     screen.text(loaded and (headers[params:get("column")]) or "loading...")
 
     screen.move(spacing + 1, 62)
-    screen.text(playing and "||" or "▶")
+    screen.text(clock_playing and "||" or "▶")
 
-    screen.move(10, 62)
+    screen.move(8, 62)
     screen.text((params:get("looping") == 1) and "&" or "")
 
     screen.move(128 - 6 - screen.text_extents(scale_names[params:get("scale")]),
@@ -206,39 +219,47 @@ function redraw()
     screen.text_right(scale_names[params:get("scale")])
 
     screen.move(128 - 2, 5)
-    screen.text_right(string.format("%.0fbpm", clock.get_tempo()))
+    crow_dot = params:get("crowpulses") == 1 and "." or ""
+    screen.text_right(crow_dot .. string.format("%.0fbpm", clock.get_tempo()))
 
     -- trigger a screen update
     screen.update()
 end
 
 -- start playing the notes
-function play_notes()
-    while true do
-        -- Sync to the clock
-        clock.sync(sync)
+function play_note()
+    -- Get the note
+    note = scaled_data[position]
+    volts = map(note, 1, params:get("note_pool_size"), 0, 10, true)
+    -- Play note from Norns
+    engine.hz(notes_freq[note])
+    -- Send trigger to Crow
+    crow "output[1](pulse(0.05))"
+    -- Output v/oct
+    crow.output[2].volts = (notes_nums[note] - 48) / 12
+    -- Output voltage
+    crow.output[3].volts = volts
+    crow.output[4].volts = volts
+end
 
-        -- Get the note
-        note = scaled_data[position]
-        volts = map(note, 1, params:get("note_pool_size"), 0, 10, true)
-        -- Play note from Norns
-        engine.hz(notes_freq[note])
-        -- Send trigger to Crow
-        crow "output[1](pulse(0.05))"
-        -- Output v/oct
-        crow.output[2].volts = (notes_nums[note] - 48) / 12
-        -- Output voltage
-        crow.output[3].volts = volts
-        crow.output[4].volts = volts
+function crow_pulse()
 
+    -- Check if crow should be playing
+    if params:get("crowpulses") == 1 then
+        play_note()
         increment_position()
+    else
+        -- Otherwise print an error message
+        print(
+            "Crow is not expecting to receieve triggers, turn it on in parameters.")
     end
+
 end
 
 -- stops the coroutine playing the notes
 function stop_play()
     clock.cancel(play)
-    playing = false
+    clock_playing = false
 end
 
 -- when a key is depressed
@@ -246,16 +267,37 @@ function key(n, z)
 
     -- Button 1: track whether it's pressed
     if n == 1 and z == 1 then key1_down = true end
-
     if n == 1 and z == 0 then key1_down = false end
 
-    -- Button 2: play/pause
+    -- Button 2: play/pause and toggle accepting crow triggers if key1 is pressed
     if n == 2 and z == 1 then
-        if not playing then
-            play = clock.run(play_notes) -- starts the clock coroutine
-            playing = true
-        elseif playing then
-            stop_play()
+        if (key1_down == true) then
+            -- Toggle accepting crow triggers
+            if params:get("crowpulses") == 0 then
+                params:set("crowpulses", 1)
+            elseif params:get("crowpulses") == 1 then
+                params:set("crowpulses", 0)
+            end
+
+        elseif (key1_down == false) then
+            if not clock_playing then
+                play = clock.run(function()
+                    while true do
+                        -- Sync to the clock
+                        clock.sync(sync)
+
+                        -- Play a note
+                        play_note()
+
+                        -- Increment position
+                        increment_position()
+                    end
+                end) -- starts the clock coroutine
+                clock_playing = true
+
+            elseif clock_playing then
+                stop_play()
+            end
         end
     end
 
@@ -266,6 +308,8 @@ function key(n, z)
             params:set("looping", 0)
         end
     end
+
+    screen_dirty = true
 end
 
 -- when an encoder is twiddled
@@ -287,6 +331,8 @@ function enc(n, d)
     if n == 3 then
         params:set("scale", util.clamp(params:get("scale") + d, 1, #scale_names))
     end
+
+    screen_dirty = true
 end
 
 -- Function to map values from one range to another
@@ -310,7 +356,8 @@ function build_scale()
     notes_nums = musicutil.generate_scale_of_length(params:get("root_note"),
                                                     params:get("scale"),
                                                     params:get("note_pool_size")) -- builds scale
-    notes_freq = musicutil.note_nums_to_freqs(notes_nums) -- converts note numbers to an array of frequencies
+    -- converts note numbers to an array of frequencies
+    notes_freq = musicutil.note_nums_to_freqs(notes_nums)
 end
 
 -- Scale the data to the pool size
@@ -333,10 +380,13 @@ function increment_position()
     elseif ((position == #data) and (params:get("looping") == 0)) then
         position = 1
         stop_play()
+        params:set("crowpulses", 0)
     else
         position = position + 1
     end
     drawn = {table.unpack(data, position, position + 15)}
+
+    screen_dirty = true
 end
 
 -- Lists out available CSV files then reloads the data
@@ -408,8 +458,6 @@ end
 function update_data()
     print("Loading column " .. headers[params:get("column")])
     data = columns[headers[params:get("column")]]
-    dMin = math.min(table.unpack(data)) -- min of the table
-    dMax = math.max(table.unpack(data)) -- max of the table
     position = 1
     scale_data()
 end
@@ -423,5 +471,16 @@ function update_param_options(id, options, default)
         local new_p = p_option.new(p_id, id, options, default)
         params.params[p_i_id] = new_p
         params:set_action(id, p.action)
+    end
+end
+
+-- Check if the screen needs redrawing 15 times a second
+function redraw_clock()
+    while true do
+        clock.sleep(1 / 15)
+        if screen_dirty then
+            redraw()
+            screen_dirty = false
+        end
     end
 end
