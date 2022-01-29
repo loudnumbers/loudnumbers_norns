@@ -1,6 +1,6 @@
 # Loud Numbers
 
-Loud Numbers is a [data sonification](https://en.wikipedia.org/wiki/Sonification) script for Norns. Right now it turns .csv files into melodies, though I have ambitions for it to eventually turn many more kinds of data file into many more musical attributes, as well as outputting MIDI over USB and control voltages through Crow.
+Loud Numbers is a [data sonification](https://en.wikipedia.org/wiki/Sonification) script for Norns. It turns .csv files into melodies and control voltages.
 
 You can select the root note and scale with encoders 2 and 3. Encoder 1 selects the bpm. Key 2 toggles play/pause, and key 3 toggles whether the melody should loop when you reach the end of the dataset or not.
 
@@ -25,12 +25,16 @@ Place data files in the /data folder - the same folder as temperatures.csv. Once
 
 ## Crow support
 
-- OUT1 = trigger
+- OUT1 = trigger out
 - OUT2 = note (1V/oct)
 - OUT3 = data value scaled to -5V-5V
 - OUT4 = data value scaled to 0V-10V
 
-I want to build this out a bit more in due course, but this works for now.
+- IN2 = play next note when a trigger is receieved
+
+Note: Crow trigger support must be turned on in the parameters menu, or by holding KEY1 and pressing KEY2.
+
+When looping is turned off (KEY3), Crow trigger support will automatically deactivate when you reach the end of your dataset and you'll need to turn it on again.
 
 ## Tips
 
@@ -39,6 +43,13 @@ I want to build this out a bit more in due course, but this works for now.
 - Looking for some data to sonify? [Step this way](https://docs.google.com/spreadsheets/d/1wZhPLMCHKJvwOkP4juclhjFgqIY8fQFMemwKL2c64vk/edit#gid=0).
 
 ## Changelog
+
+### v0.13
+
+- Loud Numbers now supports TOTAL RHYTHMIC FREEDOM, accepting triggers receieved in Crow's IN2 port.
+- TOTAL RHYTHMIC FREEDOM must be toggled on in the parameters menu or by holding KEY1 and pressing KEY2.
+- Bar rendering has been tweaked slightly to improve display of small values.
+- The screen now only redraws when something has changed.
 
 ### v0.12
 
