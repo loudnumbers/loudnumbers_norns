@@ -28,7 +28,7 @@ musicutil = require("musicutil")
 local p_option = require "core/params/option"
 -- Import library to update parameters (Thanks Eigen!)
 
-csv = require(_path.code .. "loudnumbers_norns/lib/csv")
+csv = include("lib/csv")
 -- Import csv library: https://github.com/geoffleyland/lua-csv
 
 engine.name = "PolyPerc"
