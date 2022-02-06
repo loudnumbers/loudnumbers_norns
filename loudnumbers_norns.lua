@@ -12,8 +12,8 @@
 -- ENC 3 select scale
 --
 -- Crow support
--- OUT1 = trigger
--- OUT2 = note (1V/oct)
+-- OUT1 = note (1V/oct)
+-- OUT2 = trigger
 -- OUT3 = control voltage
 -- OUT4 = control voltage
 -- 
@@ -25,11 +25,11 @@
 musicutil = require("musicutil")
 -- Import musicutil library: https://monome.org/docs/norns/reference/lib/musicutil
 
-local p_option = require "core/params/option"
 -- Import library to update parameters (Thanks Eigen!)
+local p_option = require "core/params/option"
 
-csv = include("lib/csv")
 -- Import csv library: https://github.com/geoffleyland/lua-csv
+local csv = include("lib/csv")
 
 engine.name = "PolyPerc"
 
@@ -234,9 +234,9 @@ function play_note()
     -- Play note from Norns
     engine.hz(notes_freq[note])
     -- Send trigger to Crow
-    crow "output[1](pulse(0.05))"
+    crow "output[2](pulse(0.05))"
     -- Output v/oct
-    crow.output[2].volts = (notes_nums[note] - 48) / 12
+    crow.output[1].volts = (notes_nums[note] - 48) / 12
     -- Output voltage
     crow.output[3].volts = -5 + volts
     crow.output[4].volts = volts
