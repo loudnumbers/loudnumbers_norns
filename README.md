@@ -25,8 +25,8 @@ Place data files in the /data folder - the same folder as temperatures.csv. Once
 
 ## Crow support
 
-- OUT1 = trigger out
-- OUT2 = note (1V/oct)
+- OUT1 = note (1V/oct)
+- OUT2 = trigger out
 - OUT3 = data value scaled to -5V-5V
 - OUT4 = data value scaled to 0V-10V
 
