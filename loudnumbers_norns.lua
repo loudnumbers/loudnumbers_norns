@@ -183,10 +183,10 @@ function redraw()
     for i = 1, #drawn do
 
         -- calculate height and xy positions
-        h = map(drawn[i], dMin, dMax, 0, 44)
+        local h = map(drawn[i], dMin, dMax, 0, 44)
         h = h < 1 and 1 or h -- round up for sub-pixel values
-        x = 1 + spacing + ((i - 1) * (rectWidth + spacing))
-        y = 64 - 10 - h
+        local x = 1 + spacing + ((i - 1) * (rectWidth + spacing))
+        local y = 64 - 10 - h
 
         -- highlight the active datapoint
         screen.level(i == 1 and 15 or 4)
@@ -497,7 +497,6 @@ function update_param_options(id, options, default)
     local p_i_id = params.lookup[id]
     if p_i_id ~= nil then
         local p = params.params[p_i_id]
-        -- tab.print(p) -- for debugging
         local new_p = p_option.new(p_id, id, options, default)
         params.params[p_i_id] = new_p
         params:set_action(id, p.action)
