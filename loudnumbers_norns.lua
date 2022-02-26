@@ -1,5 +1,5 @@
 -- loudnumbers_norns
--- v0.12 @duncangeere
+-- v0.14 @duncangeere
 -- https://llllllll.co/t/51353
 --
 -- data sonification with Norns
@@ -18,9 +18,7 @@
 -- OUT4 = control voltage
 -- 
 -- TODO
--- - Preserve ordering of columns
--- - Grid support
--- - Increment the note when Crow receives a trigger
+-- - Preserve ordering of columns in CSV file
 --
 musicutil = require("musicutil")
 -- Import musicutil library: https://monome.org/docs/norns/reference/lib/musicutil
@@ -32,6 +30,9 @@ local p_option = require "core/params/option"
 local csv = include("lib/csv")
 
 engine.name = "PolyPerc"
+
+-- Init grid
+g = grid.connect()
 
 function init()
 
@@ -166,9 +167,11 @@ function init()
     clock_playing = false -- whether notes are playing
     key1_down = false -- whether key1 is depressed
     screen_dirty = true -- track whether screen needs redrawing
+    grid_dirty = true -- track whether grid needs redrawing
 
     -- Start a clock to refresh the screen
     redraw_clock_id = clock.run(redraw_clock)
+    redraw_grid_clock_id = clock.run(redraw_grid_clock)
 
 end
 
@@ -224,6 +227,31 @@ function redraw()
 
     -- trigger a screen update
     screen.update()
+end
+
+function redraw_grid()
+
+    -- clear the grid
+    g:all(0)
+
+    -- loop over the data and draw the bars
+    for i = 1, #drawn do
+
+        -- calculate height and x positions
+        local h = map(drawn[i], dMin, dMax, 0, g.device.rows)
+        h = math.ceil(h) -- round up for sub-pixel values
+        local x = i
+        local brightness = i == 1 and 15 or 7
+
+        -- Light the column
+        for j = 0, h do
+            y = g.device.rows + 1 - h + j
+            g:led(x, y, brightness)
+        end
+    end
+
+    -- trigger a grid update
+    g:refresh()
 end
 
 -- start playing the notes
@@ -310,6 +338,7 @@ function key(n, z)
     end
 
     screen_dirty = true
+    grid_dirty = true
 end
 
 -- when an encoder is twiddled
@@ -370,7 +399,7 @@ function scale_data()
                          map(data[i], dMin, dMax, 1,
                              params:get("note_pool_size"))))
     end
-    drawn = {table.unpack(data, 1, 16)}
+    drawn = {table.unpack(data, 1, g.device ~= nil and g.device.cols or 16)}
 end
 
 -- Adds 1 to the position and resets if it gets to the end of the data
@@ -387,6 +416,7 @@ function increment_position()
     drawn = {table.unpack(data, position, position + 15)}
 
     screen_dirty = true
+    grid_dirty = true
 end
 
 -- Lists out available CSV files then reloads the data
@@ -481,6 +511,16 @@ function redraw_clock()
         if screen_dirty then
             redraw()
             screen_dirty = false
+        end
+    end
+end
+
+function redraw_grid_clock()
+    while true do
+        clock.sleep(1 / 10)
+        if grid_dirty and g.device ~= nil then
+            redraw_grid()
+            grid_dirty = false
         end
     end
 end
