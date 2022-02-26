@@ -46,7 +46,7 @@ When looping is turned off (KEY3), Crow trigger support will automatically deact
 
 ### v0.14
 
-- Connect a grid and get a visualization of your data. 
+- Connect a grid and get a visualization of your data.
 - Should support grids of any size and hot-plugging, but let me know if you run into difficulties.
 
 ### v0.13
