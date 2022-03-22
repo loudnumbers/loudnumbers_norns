@@ -34,6 +34,9 @@ engine.name = "PolyPerc"
 -- Init grid
 g = grid.connect()
 
+-- Init midi
+if midi.devices ~= nil then my_midi = midi.connect() end
+
 function init()
 
     -- DEFINING SYSTEM VARIABLES
@@ -268,6 +271,8 @@ function play_note()
     -- Output voltage
     crow.output[3].volts = -5 + volts
     crow.output[4].volts = volts
+    -- Play midi note
+    if midi.devices ~= nil then play_midi_note(notes_nums[note]) end
 end
 
 function crow_pulse()
@@ -287,6 +292,7 @@ end
 -- stops the coroutine playing the notes
 function stop_play()
     clock.cancel(play)
+    if midi.devices ~= nil then my_midi:stop() end
     clock_playing = false
 end
 
@@ -309,6 +315,7 @@ function key(n, z)
 
         elseif (key1_down == false) then
             if not clock_playing then
+                if midi.devices ~= nil then my_midi:start() end
                 play = clock.run(function()
                     while true do
                         -- Sync to the clock
@@ -523,3 +530,14 @@ function redraw_grid_clock()
         end
     end
 end
+
+function play_midi_note(midi_note)
+    if midi.devices ~= nil then
+        stopping = clock.run(function()
+            my_midi:note_on(midi_note)
+            clock.sleep(10 / clock.get_tempo())
+            my_midi:note_off(midi_note)
+        end)
+    end
+end
+
