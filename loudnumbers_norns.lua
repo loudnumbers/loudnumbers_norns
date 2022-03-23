@@ -61,28 +61,6 @@ function init()
     drawn = {}
     loaded = false
 
-    -- Set up Crow to accept pulses
-    -- setting whether crow accepts pulses or not
-    params:add{
-        type = "binary",
-        id = "crowpulses",
-        name = "accept crow pulses",
-        behavior = "toggle",
-        default = 0
-    }
-
-    -- Report when turned on and off
-    params:set_action("crowpulses", function()
-        if params:get("crowpulses") == 1 then
-            print("Listening for triggers on crow IN2...")
-        elseif params:get("crowpulses") == 0 then
-            print("No longer listening for triggers on crow IN2.")
-        end
-    end)
-
-    crow.input[2].change = crow_pulse
-    crow.input[2].mode("change", 2.0, 0.25, "rising")
-
     list_file_names(
         function() -- this runs slowly, so we need a callback for what happens next
 
@@ -144,16 +122,6 @@ function init()
         end
     }
 
-    -- Setting length of gates sent by crow
-    params:add{
-        type = "number",
-        id = "crow_gate",
-        name = "crow gate length",
-        min = 0.01,
-        max = 0.50,
-        default = 0.01
-    }
-
     -- setting the whether it loops or not
     params:add{
         type = "binary",
@@ -162,6 +130,55 @@ function init()
         behavior = "toggle",
         default = 1
     }
+
+    -- CROW
+    params:add_separator("crow")
+
+    -- Set up Crow to accept pulses
+    -- setting whether crow accepts pulses or not
+    params:add{
+        type = "binary",
+        id = "crowpulses",
+        name = "accept crow pulses",
+        behavior = "toggle",
+        default = 0
+    }
+
+    -- Report when turned on and off
+    params:set_action("crowpulses", function()
+        if params:get("crowpulses") == 1 then
+            print("Listening for triggers on crow IN2...")
+        elseif params:get("crowpulses") == 0 then
+            print("No longer listening for triggers on crow IN2.")
+        end
+    end)
+
+    crow.input[2].change = crow_pulse
+    crow.input[2].mode("change", 2.0, 0.25, "rising")
+
+    -- Setting length of gates sent by crow
+    params:add_control("crow_length", "crow note length (s)",
+                       controlspec.new(0.01, 1, "lin", 0.01, 0.05))
+
+    -- MIDI
+    params:add_separator("MIDI")
+
+    -- Midi channel number
+    params:add{
+        type = "number",
+        id = "midi_channel",
+        name = "MIDI channel number",
+        min = 1,
+        max = 16,
+        default = 1
+    }
+
+    -- Midi gate length
+    params:add_control("midi_length", "MIDI note length (s)",
+                       controlspec.new(0.01, 1, "lin", 0.01, 0.1))
+
+    -- DATA
+    params:add_separator("data")
 
     build_scale() -- builds initial scale
     scale_data() -- scales the data to the notes
@@ -265,7 +282,8 @@ function play_note()
     -- Play note from Norns
     engine.hz(notes_freq[note])
     -- Send trigger to Crow
-    crow "output[2](pulse(0.05))"
+    crow.output[2].action = "pulse(" .. params:get('crow_length') .. ")"
+    crow.output[2]() -- thanks zbs & eigen <3
     -- Output v/oct
     crow.output[1].volts = (notes_nums[note] - 48) / 12
     -- Output voltage
@@ -534,10 +552,9 @@ end
 function play_midi_note(midi_note)
     if midi.devices ~= nil then
         stopping = clock.run(function()
-            my_midi:note_on(midi_note)
-            clock.sleep(10 / clock.get_tempo())
-            my_midi:note_off(midi_note)
+            my_midi:note_on(midi_note, 100, params:get("midi_channel"))
+            clock.sleep(params:get("midi_length"))
+            my_midi:note_off(midi_note, 100, params:get("midi_channel"))
         end)
     end
 end
-
