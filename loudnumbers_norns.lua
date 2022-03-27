@@ -1,5 +1,5 @@
 -- loudnumbers_norns
--- v0.14 @duncangeere
+-- v0.15 @duncangeere
 -- https://llllllll.co/t/51353
 --
 -- data sonification with Norns
