@@ -258,14 +258,14 @@ function redraw_grid()
     for i = 1, #drawn do
 
         -- calculate height and x positions
-        local h = map(drawn[i], dMin, dMax, 0, g.device.rows)
+        local h = map(drawn[i], dMin, dMax, 0, g.rows)
         h = math.ceil(h) -- round up for sub-pixel values
         local x = i
         local brightness = i == 1 and 15 or 7
 
         -- Light the column
         for j = 0, h do
-            y = g.device.rows + 1 - h + j
+            y = g.rows + 1 - h + j
             g:led(x, y, brightness)
         end
     end
@@ -424,7 +424,7 @@ function scale_data()
                          map(data[i], dMin, dMax, 1,
                              params:get("note_pool_size"))))
     end
-    drawn = {table.unpack(data, 1, g.device ~= nil and g.device.cols or 16)}
+    drawn = {table.unpack(data, 1, g.device ~= nil and g.cols or 16)}
 end
 
 -- Adds 1 to the position and resets if it gets to the end of the data
