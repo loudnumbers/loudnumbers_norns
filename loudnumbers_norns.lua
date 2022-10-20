@@ -17,8 +17,6 @@
 -- OUT3 = control voltage
 -- OUT4 = control voltage
 -- 
--- TODO
--- - Preserve ordering of columns in CSV file
 --
 musicutil = require("musicutil")
 -- Import musicutil library: https://monome.org/docs/norns/reference/lib/musicutil
