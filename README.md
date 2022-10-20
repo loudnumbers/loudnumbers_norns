@@ -44,6 +44,18 @@ When looping is turned off (KEY3), Crow trigger support will automatically deact
 
 ## Changelog
 
+### v0.16
+
+- Switched graphics to use @markeats’ lib.Graph library, rather than my hand-coded bar chart thing.
+- Support for custom csv separators - Europeans rejoice. Change line 31 (the sep variable) if you’re not using comma-separated values.
+- File and column names are now alphabetically ordered in menus, giving more consistency than the random ordering that came before. If you want a particular file or column to load automatically when the script is loaded, add an underscore (_) to the beginning of the file or column name.
+
+### v0.15
+
+- Loud Numbers will send MIDI notes to the first connected MIDI device in the list. It should also send start and stop signals when starting and stopping.
+- You can change which MIDI channel it uses in the parameters, as well as adjusting the length of the MIDI note.
+- You can now also adjust the length of Crow notes in the parameters too, which were previously fixed. Big thanks to @eigen and @zbs for helping me fix a troublesome bug on that.
+
 ### v0.14
 
 - Connect a grid and get a visualization of your data.
