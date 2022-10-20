@@ -1,5 +1,5 @@
 -- loudnumbers_norns
--- v0.15 @duncangeere
+-- v0.16 @duncangeere
 -- https://llllllll.co/t/51353
 --
 -- data sonification with Norns
@@ -28,6 +28,11 @@ local p_option = require "core/params/option"
 
 -- Import csv library: https://github.com/geoffleyland/lua-csv
 local csv = include("lib/csv")
+
+-- Import chart library: 
+local Graph = include("lib/lightergraph")
+chart = {};
+chart_point = {};
 
 engine.name = "PolyPerc"
 
@@ -58,7 +63,7 @@ function init()
     -- Get list of file names in folder
     file_names = {}
     headers = {}
-    drawn = {}
+    grid_drawn = {}
     loaded = false
 
     list_file_names(
@@ -199,27 +204,10 @@ function redraw()
     -- clear the screen
     screen.clear()
 
-    -- loop over the data and draw the bars
-    for i = 1, #drawn do
-
-        -- calculate height and xy positions
-        local h = map(drawn[i], dMin, dMax, 0, 44)
-        h = h < 1 and 1 or h -- round up for sub-pixel values
-        local x = 1 + spacing + ((i - 1) * (rectWidth + spacing))
-        local y = 64 - 10 - h
-
-        -- highlight the active datapoint
-        screen.level(i == 1 and 15 or 4)
-
-        -- draw the rectangle (making height 1 if it's 0)
-        screen.rect(x, y, rectWidth, h > 0 and h or 1)
-
-        -- fill the active datapoint
-        if (i == 1) then
-            screen.fill()
-        else
-            screen.stroke()
-        end
+    if loaded then
+        -- Redraw background chart
+        chart:redraw()
+        chart_point:redraw()
     end
 
     -- Text bits
@@ -255,10 +243,10 @@ function redraw_grid()
     g:all(0)
 
     -- loop over the data and draw the bars
-    for i = 1, #drawn do
+    for i = 1, #grid_drawn do
 
         -- calculate height and x positions
-        local h = map(drawn[i], dMin, dMax, 0, g.rows)
+        local h = map(grid_drawn[i], dMin, dMax, 0, g.rows)
         h = math.ceil(h) -- round up for sub-pixel values
         local x = i
         local brightness = i == 1 and 15 or 7
@@ -424,11 +412,15 @@ function scale_data()
                          map(data[i], dMin, dMax, 1,
                              params:get("note_pool_size"))))
     end
-    drawn = {table.unpack(data, 1, g.device ~= nil and g.cols or 16)}
+    grid_drawn = {table.unpack(data, 1, g.device ~= nil and g.cols or 16)}
 end
 
 -- Adds 1 to the position and resets if it gets to the end of the data
 function increment_position()
+
+    chart_point:remove_all_points()
+    chart_point:add_point(position, data[position], "lin", true)
+
     if ((position == #data) and params:get("looping") == 1) then
         position = 1
     elseif ((position == #data) and (params:get("looping") == 0)) then
@@ -438,7 +430,7 @@ function increment_position()
     else
         position = position + 1
     end
-    drawn = {table.unpack(data, position, position + 15)}
+    grid_drawn = {table.unpack(data, position, position + 15)}
 
     screen_dirty = true
     grid_dirty = true
@@ -446,7 +438,9 @@ end
 
 -- Lists out available CSV files then reloads the data
 function list_file_names(callback)
+
     local cb = function(text)
+
         -- Get a list of filenames
         for line in string.gmatch(text, "/[%w%s]+.csv") do
             name = string.sub(line, 2, -5)
@@ -475,8 +469,10 @@ function list_file_names(callback)
         reload_data() -- get the data
         callback()
     end
+
     norns.system_cmd('find ' .. _path.code ..
                          'loudnumbers_norns/data -name *.csv', cb)
+
 end
 
 -- Reloads the data once selected
@@ -515,6 +511,17 @@ function update_data()
     data = columns[headers[params:get("column")]]
     position = 1
     scale_data()
+
+    -- Define the chart
+    chart = Graph.new(1, #data, "lin", dMin, dMax, "lin", "line", false, false)
+    chart:set_position_and_size(1 + spacing, 10, 128 - (spacing * 2), 44)
+    -- Add data to it
+    for i = 1, #data do chart:add_point(i, data[i]) end
+
+    -- Make a chart with a single point
+    chart_point = Graph.new(1, #data, "lin", dMin, dMax, "lin", "point", false,
+                            false)
+    chart_point:set_position_and_size(1 + spacing, 10, 128 - (spacing * 2), 44)
 end
 
 -- Updates the options of a parameter dynamically (Thanks Eigen!)
