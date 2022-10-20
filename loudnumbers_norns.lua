@@ -29,6 +29,9 @@ local p_option = require "core/params/option"
 -- Import csv library: https://github.com/geoffleyland/lua-csv
 local csv = include("lib/csv")
 
+-- Specify csv separator (defaults to comma)
+local sep = ",";
+
 -- Import chart library: 
 local Graph = include("lib/lightergraph")
 chart = {};
@@ -485,7 +488,7 @@ function reload_data()
     -- open the file
     f = csv.open(_path.code .. "loudnumbers_norns/data/" ..
                      file_names[params:get("filename")] .. ".csv",
-                 {separator = ",", header = true})
+                 {separator = sep, header = true})
 
     -- loop through each line
     for fields in f:lines() do
