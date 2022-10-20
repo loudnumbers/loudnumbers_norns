@@ -480,6 +480,7 @@ function reload_data()
     print("reloading data")
     headers = {}
     columns = {}
+    counter = 1;
 
     -- open the file
     f = csv.open(_path.code .. "loudnumbers_norns/data/" ..
@@ -488,18 +489,22 @@ function reload_data()
 
     -- loop through each line
     for fields in f:lines() do
+
         for i, v in pairs(fields) do
 
             -- if the header isn't already in the columns table, add it
             if columns[i] == nil then
                 columns[i] = {}
-                table.insert(headers, i)
+                headers[counter] = i
+                counter = counter + 1
             end
 
             -- otherwise add the data
             table.insert(columns[i], tonumber(v) ~= nil and tonumber(v) or 0)
         end
     end
+
+    table.sort(headers)
 
     print("column headers found:")
     tab.print(headers)
