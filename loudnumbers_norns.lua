@@ -442,7 +442,7 @@ function list_file_names(callback)
     local cb = function(text)
 
         -- Get a list of filenames
-        for line in string.gmatch(text, "/[%w%s]+.csv") do
+        for line in string.gmatch(text, "/[%w%s_]+.csv") do
             name = string.sub(line, 2, -5)
             table.insert(file_names, name)
         end
