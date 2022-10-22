@@ -12,6 +12,9 @@
 -- ENC 3 select scale
 --
 -- Crow support
+-- IN2 = play next note when a 
+--      trigger is received
+--
 -- OUT1 = note (1V/oct)
 -- OUT2 = trigger
 -- OUT3 = control voltage
