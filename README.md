@@ -1,6 +1,6 @@
 # Loud Numbers
 
-Loud Numbers is a [data sonification](https://en.wikipedia.org/wiki/Sonification) script for Norns. It turns .csv files into melodies and control voltages.
+Loud Numbers is a [data sonification](https://www.loudnumbers.net/sonification) script for Norns. It turns .csv files into melodies and control voltages.
 
 You can select the root note and scale with encoders 2 and 3. Encoder 1 selects the bpm. Key 2 toggles play/pause, and key 3 toggles whether the melody should loop when you reach the end of the dataset or not.
 
@@ -9,6 +9,7 @@ The script comes with a default set of data - temperature.csv, which contains gl
 ## Requirements
 
 Monome Norns or Norns Shield
+Optional: Grid, Crow
 
 ## Instructions
 
@@ -39,15 +40,18 @@ When looping is turned off (KEY3), Crow trigger support will automatically deact
 ## Tips
 
 - The script assumes that your .csv file has headers. If it doesn't, it'll read the first row of data as headers.
-- The script is a little fragile at the moment. Don't feed it anything too weird. If it breaks, please let me know (attach the CSV you're using) and I'll try to figure out why.
-- Looking for some data to sonify? [Step this way](https://docs.google.com/spreadsheets/d/1wZhPLMCHKJvwOkP4juclhjFgqIY8fQFMemwKL2c64vk/edit#gid=0).
+- The script expects [wide (not long) data](https://www.statology.org/long-vs-wide-data/). Use a pivot table to reformat if you need to. A two-minute explainer video on how to do this [can be found here](https://llllllll.co/t/loud-numbers-data-sonification-with-norns/51353/39?u=radioedit).
+- Right now the script treats missing values as zeros. This is on my list to fix.
+- Looking for some data to sonify? [Step this way](https://github.com/loudnumbers/environmental_data).
 
 ## Changelog
 
 ### v0.16
 
-- Switched graphics to use @markeats’ lib.Graph library, rather than my hand-coded bar chart thing.
+- Switched graphics to use @markeats’ lib.Graph 2 library, rather than my hand-coded bar chart thing.
+
 - Support for custom csv separators - Europeans rejoice. Change line 31 (the sep variable) if you’re not using comma-separated values.
+
 - File and column names are now alphabetically ordered in menus, giving more consistency than the random ordering that came before. If you want a particular file or column to load automatically when the script is loaded, add an underscore (_) to the beginning of the file or column name.
 
 ### v0.15
@@ -85,4 +89,4 @@ When looping is turned off (KEY3), Crow trigger support will automatically deact
 
 ## Loud Numbers?
 
-It's the name of my [data sonification podcast](https://www.loudnumbers.net/). Worth a listen if you want to see what's possible with sonification.
+It's the name of my [data sonification studio](https://www.loudnumbers.net/). Worth checking out if you want to see what's possible with sonification.
