@@ -235,8 +235,8 @@ function redraw()
     screen.text((params:get("looping") == 1) and "&" or "")
 
     screen.move(128 - 6 - screen.text_extents(scale_names[params:get("scale")]),
-    screen.text_right(musicutil.note_num_to_name(params:get("root_note"), true))
         62)
+    screen.text_right(music.note_num_to_name(params:get("root_note"), true))
 
     screen.move(128 - 2, 62)
     screen.text_right(scale_names[params:get("scale")])
