@@ -80,6 +80,7 @@ function init()
 
             -- Load the data column
             update_data()
+            scale_data()
 
             loaded = true -- track whether data is loaded yet for UI purposes
         end)
@@ -198,8 +199,43 @@ function init()
     -- DATA
     params:add_separator("data")
 
-    build_scale() -- builds initial scale
-    scale_data() -- scales the data to the notes
+    -- add datamin and datamax parameters
+    params:add {
+        type = "number",
+        id = "datamin",
+        name = "data min",
+        min = -999999,
+        max = 999999,
+        default = 0,
+        action = function() -- update the scale when it's changed
+            if loaded then
+                scale_data()
+                update_chart_axes()
+            end
+            screen_dirty = true
+            grid_dirty = true
+        end
+    }
+    params:add {
+        type = "number",
+        id = "datamax",
+        name = "data max",
+        min = -999999,
+        max = 999999,
+        default = 0,
+        action = function() -- update the scale when it's changed
+            if loaded then
+                scale_data()
+                update_chart_axes()
+            end
+            screen_dirty = true
+            grid_dirty = true
+        end
+    }
+
+    build_scale()         -- builds initial scale
+    update_data_range()   -- updates the range of the data
+    scale_data()          -- scales the data to the notes
 
     position = 1          -- Set initial position at start of data
     clock_playing = false -- whether notes are playing
@@ -256,7 +292,7 @@ function redraw_grid()
     -- loop over the data and draw the bars
     for i = 1, #grid_drawn do
         -- calculate height and x positions
-        local h = map(grid_drawn[i], dMin, dMax, 0, g.rows)
+        local h = map(grid_drawn[i], params:get("datamin"), params:get("datamax"), 0, g.rows, true)
         h = math.ceil(h) -- round up for sub-pixel values
         local x = i
         local brightness = i == 1 and 15 or 7
@@ -277,6 +313,8 @@ function play_note()
     -- Get the note
     note = scaled_data[position]
     volts = map(note, 1, params:get("note_pool_size"), 0, 10, true)
+    volts = map(data[position], params:get("datamin"), params:get("datamax"), 0, 10, true)
+
     -- Play note from Norns
     engine.hz(notes_freq[note])
 
@@ -301,7 +339,7 @@ function play_note()
         if params:get("send_midi_cc") == 1 then
             my_midi:cc(
                 params:get("midi_cc"),
-                math.floor(map(note, 1, params:get("note_pool_size"), 0, 127, true)),
+                math.floor(map(data[position], params:get("datamin"), params:get("datamax"), 0, 127, true)),
                 params:get("midi_channel")
             )
         end
@@ -427,14 +465,24 @@ end
 -- Scale the data to the pool size
 function scale_data()
     scaled_data = {}
-    dMin = math.min(table.unpack(data)) -- min of the table
-    dMax = math.max(table.unpack(data)) -- max of the table
+
     for i = 1, #data do
         table.insert(scaled_data, math.floor(
-                         map(data[i], dMin, dMax, 1,
-                             params:get("note_pool_size"))))
+            map(data[i], params:get("datamin"), params:get("datamax"), 1,
+                params:get("note_pool_size"), true)))
     end
     grid_drawn = { table.unpack(data, 1, g.device ~= nil and g.cols or 16) }
+end
+
+-- Updates graph y-axes
+function update_chart_axes()
+    chart:set_y_min(params:get("datamin"))
+    chart:set_y_max(params:get("datamax"))
+    chart_point:set_y_min(params:get("datamin"))
+    chart_point:set_y_max(params:get("datamax"))
+
+    chart:redraw()
+    chart_point:redraw()
 end
 
 -- Adds 1 to the position and resets if it gets to the end of the data
@@ -531,18 +579,30 @@ function update_data()
     print("Loading column " .. headers[params:get("column")])
     data = columns[headers[params:get("column")]]
     position = 1
-    scale_data()
+
+    update_data_range()
 
     -- Define the chart
-    chart = Graph.new(1, #data, "lin", dMin, dMax, "lin", "line", false, false)
+    chart = Graph.new(1, #data, "lin", params:get("datamin"), params:get("datamax"), "lin", "line", false, false)
     chart:set_position_and_size(1 + spacing, 10, 128 - (spacing * 2), 44)
     -- Add data to it
     for i = 1, #data do chart:add_point(i, data[i]) end
 
     -- Make a chart with a single point
-    chart_point = Graph.new(1, #data, "lin", dMin, dMax, "lin", "point", false,
-                            false)
+    chart_point = Graph.new(1, #data, "lin", params:get("datamin"), params:get("datamax"), "lin", "point", false,
+        false)
     chart_point:set_position_and_size(1 + spacing, 10, 128 - (spacing * 2), 44)
+end
+
+-- Runs in the update_data function and on initial script load
+function update_data_range()
+    -- calculate default min and max for the data
+    dMin = math.min(table.unpack(data)) -- min of the table
+    dMax = math.max(table.unpack(data)) -- max of the table
+    params:set("datamin", dMin)
+    params:set("datamax", dMax)
+    print("dMin is now " .. params:get("datamin"))
+    print("dMax is now " .. params:get("datamax"))
 end
 
 -- Updates the options of a parameter dynamically (Thanks Eigen!)
