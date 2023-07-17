@@ -182,9 +182,22 @@ function init()
         default = 1
     }
 
+    -- Midi options
+    params:add_binary("send_midi_notes", "Play MIDI notes?", "toggle", 1)
+    params:add_binary("send_midi_cc", "Send MIDI CC?", "toggle", 0)
+
     -- Midi gate length
     params:add_control("midi_length", "MIDI note length (s)",
                        controlspec.new(0.01, 1, "lin", 0.01, 0.1))
+
+    params:add {
+        type = "number",
+        id = "midi_cc",
+        name = "MIDI CC number",
+        min = 0,
+        max = 127,
+        default = 1
+    }
 
     -- DATA
     params:add_separator("data")
@@ -281,8 +294,22 @@ function play_note()
     -- Output voltage
     crow.output[3].volts = -5 + volts
     crow.output[4].volts = volts
-    -- Play midi note
-    if midi.devices ~= nil then play_midi_note(notes_nums[note]) end
+
+    -- Play midi
+    if midi.devices ~= nil then
+        -- If midi note is being sent, send it
+        if params:get("send_midi_notes") == 1 then
+            play_midi_note(notes_nums[note])
+        end
+        -- If midi cc is being sent, send it
+        if params:get("send_midi_cc") == 1 then
+            my_midi:cc(
+                params:get("midi_cc"),
+                math.floor(map(note, 1, params:get("note_pool_size"), 0, 127, true)),
+                params:get("midi_channel")
+            )
+        end
+    end
 end
 
 function crow_pulse()
