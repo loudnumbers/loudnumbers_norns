@@ -22,7 +22,8 @@
 -- OUT4 = control voltage
 -- 
 --
-musicutil = require("musicutil")
+--
+music = require("musicutil")
 -- Import musicutil library: https://monome.org/docs/norns/reference/lib/musicutil
 
 -- Import library to update parameters (Thanks Eigen!)
@@ -98,15 +99,15 @@ function init()
         max = 127,
         default = math.random(50, 70),
         formatter = function(param)
-            return musicutil.note_num_to_name(param:get(), true)
+            return music.note_num_to_name(param:get(), true)
         end,
         action = function() build_scale() end
     } -- by employing build_scale() here, we update the scale
 
     -- setting scale type using params
     scale_names = {}
-    for i = 1, #musicutil.SCALES do
-        table.insert(scale_names, musicutil.SCALES[i].name)
+    for i = 1, #music.SCALES do
+        table.insert(scale_names, music.SCALES[i].name)
     end
 
     params:add{
@@ -427,11 +428,11 @@ end
 
 -- Build the scale
 function build_scale()
-    notes_nums = musicutil.generate_scale_of_length(params:get("root_note"),
-                                                    params:get("scale"),
-                                                    params:get("note_pool_size")) -- builds scale
+    notes_nums = music.generate_scale_of_length(params:get("root_note"),
+        params:get("scale"),
+        params:get("note_pool_size")) -- builds scale
     -- converts note numbers to an array of frequencies
-    notes_freq = musicutil.note_nums_to_freqs(notes_nums)
+    notes_freq = music.note_nums_to_freqs(notes_nums)
 end
 
 -- Scale the data to the pool size
