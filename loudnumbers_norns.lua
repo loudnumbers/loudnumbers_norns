@@ -38,6 +38,7 @@ local sep = ",";
 local Graph = include("lib/lightergraph")
 chart = {}       -- line chart
 chart_point = {} -- highlighting active point
+spacing = 2
 
 engine.name = "PolyPerc"
 
@@ -55,10 +56,6 @@ function init()
     data = { 1, 2, 3, 4, 5, 6, 7, 8 }
 
     columns = {}
-
-    -- Visual variables
-    spacing = 2 -- spacing between bars
-    rectWidth = ((127 - spacing) / 16) - spacing
 
     -- Sound variables
     sync = 1 / 2
@@ -99,7 +96,7 @@ function init()
             return music.note_num_to_name(param:get(), true)
         end,
         action = function() build_scale() end
-    } -- by employing build_scale() here, we update the scale
+    } -- by employing build_scale() here, we update the scale every time the rootnote changes
 
     -- setting scale type using params
     scale_names = {}
@@ -126,7 +123,7 @@ function init()
         default = 16,
         action = function() -- update the scale when it's changed
             build_scale()
-            scale_data()
+            scale_data()    -- we also need to scale the data again
         end
     }
 
@@ -549,6 +546,8 @@ function update_data()
 end
 
 -- Updates the options of a parameter dynamically (Thanks Eigen!)
+-- This is used to refresh the list of columns in the param menu
+-- when a new file is selected
 function update_param_options(id, options, default)
     local p_i_id = params.lookup[id]
     if p_i_id ~= nil then
@@ -570,6 +569,7 @@ function redraw_clock()
     end
 end
 
+-- Check if the grid needs redrawing 10 times a second
 function redraw_grid_clock()
     while true do
         clock.sleep(1 / 10)
@@ -580,6 +580,7 @@ function redraw_grid_clock()
     end
 end
 
+-- MIDI support
 function play_midi_note(midi_note)
     if midi.devices ~= nil then
         stopping = clock.run(function()
