@@ -13,7 +13,7 @@ Optional: Grid, Crow
 
 ## Instructions
 
-Place data files in the /data folder - the same folder as temperatures.csv. Once you've loaded your file, restart the script and select it through the parameters menu.
+Place data files in the we/data/loudnumbers_norns/csv folder - the same folder as _temperatures.csv. Once you've loaded your file, restart the script and select it through the parameters menu.
 
 - KEY 2: toggle play/pause
 - KEY 3: toggle loop
@@ -31,6 +31,7 @@ Place data files in the /data folder - the same folder as temperatures.csv. Once
 - OUT3 = data value scaled to -5V-5V
 - OUT4 = data value scaled to 0V-10V
 
+- IN1 = clock input
 - IN2 = play next note when a trigger is receieved
 
 Note: Crow trigger support must be turned on in the parameters menu, or by holding KEY1 and pressing KEY2.
@@ -45,6 +46,10 @@ When looping is turned off (KEY3), Crow trigger support will automatically deact
 - Looking for some data to sonify? [Step this way](https://github.com/loudnumbers/environmental_data).
 
 ## Changelog
+
+### v0.17
+
+- Moved CSV location to the data folder, so your CSVs don't get wiped so easily. Place CSVs you want to use in we/data/loudnumbers_norns/csv.
 
 ### v0.16
 
