@@ -25,6 +25,10 @@
 music = require("musicutil")
 -- Import musicutil library: https://monome.org/docs/norns/reference/lib/musicutil
 
+-- Move files to data folder if not there already
+if not util.file_exists(_path.data .. "loudnumbers_norns/csv/_temperature.csv") then
+    os.execute("mv ".._path.code .."loudnumbers_norns/ignorethisfolder/_temperature.csv ".._path.data.."loudnumbers_norns/csv/_temperature.csv")
+end
 -- Import library to update parameters (Thanks Eigen!)
 local p_option = require "core/params/option"
 
@@ -522,7 +526,7 @@ function list_file_names(callback)
         -- setting the filename to use
         params:add {
             type = "option",
-            id = "filename",
+            id = "data file",
             name = "data filename",
             options = file_names,
             default = 1,
@@ -537,8 +541,8 @@ function list_file_names(callback)
         callback()
     end
 
-    norns.system_cmd('find ' .. _path.code ..
-        'loudnumbers_norns/data -name *.csv', cb)
+    norns.system_cmd('find ' .. _path.data ..
+        'loudnumbers_norns/csv -name *.csv', cb)
 end
 
 -- Reloads the data once a new csv file is selected
@@ -549,8 +553,8 @@ function reload_data()
     counter = 1;
 
     -- open the file
-    f = csv.open(_path.code .. "loudnumbers_norns/data/" ..
-        file_names[params:get("filename")] .. ".csv",
+    f = csv.open(_path.data .. "loudnumbers_norns/csv/" ..
+        file_names[params:get("data file")] .. ".csv",
         { separator = sep, header = true })
 
     -- loop through each line
