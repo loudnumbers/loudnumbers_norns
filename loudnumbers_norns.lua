@@ -1,5 +1,5 @@
 -- loudnumbers_norns
--- v0.16 @duncangeere
+-- v0.17 @duncangeere
 -- https://llllllll.co/t/51353
 --
 -- data sonification with Norns
@@ -28,10 +28,10 @@ music = require("musicutil")
 -- Move files to data folder if not there already
 if not util.file_exists(_path.data .. "loudnumbers_norns/csv/_temperature.csv") then
     os.execute("mkdir " ..
-    _path.data ..
-    "loudnumbers_norns/csv/ && mv " ..
-    _path.code ..
-    "loudnumbers_norns/ignorethisfolder/_temperature.csv " .. _path.data .. "loudnumbers_norns/csv/_temperature.csv")
+        _path.data ..
+        "loudnumbers_norns/csv/ && mv " ..
+        _path.code ..
+        "loudnumbers_norns/ignorethisfolder/_temperature.csv " .. _path.data .. "loudnumbers_norns/csv/_temperature.csv")
 end
 -- Import library to update parameters (Thanks Eigen!)
 local p_option = require "core/params/option"
