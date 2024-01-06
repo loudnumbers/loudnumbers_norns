@@ -204,6 +204,25 @@ function init()
         default = 1
     }
 
+    params:add {
+        type = "number",
+        id = "midi_cc_min",
+        name = "MIDI CC output min",
+        min = 0,
+        max = 126,
+        default = 0
+    }
+
+    params:add {
+        type = "number",
+        id = "midi_cc_max",
+        name = "MIDI CC output max",
+        min = 1,
+        max = 127,
+        default = 127
+    }
+
+
     -- DATA
     params:add_separator("data")
 
@@ -345,11 +364,20 @@ function play_note()
         end
         -- If midi cc is being sent, send it
         if params:get("send_midi_cc") == 1 then
-            my_midi:cc(
-                params:get("midi_cc"),
-                math.floor(map(data[position], params:get("datamin"), params:get("datamax"), 0, 127, true)),
-                params:get("midi_channel")
-            )
+            -- Calculate CC value to send
+            local cc_val = math.floor(
+                map(
+                    data[position],
+                    params:get("datamin"),
+                    params:get("datamax"),
+                    params:get("midi_cc_min"),
+                    params:get("midi_cc_max"),
+                    true
+                )
+            );
+            -- Send it
+            my_midi:cc(params:get("midi_cc"), cc_val, params:get("midi_channel"))
+            print("cc_val: ", cc_val)
         end
     end
 end
