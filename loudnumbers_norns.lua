@@ -377,7 +377,6 @@ function play_note()
             );
             -- Send it
             my_midi:cc(params:get("midi_cc"), cc_val, params:get("midi_channel"))
-            print("cc_val: ", cc_val)
         end
     end
 end
